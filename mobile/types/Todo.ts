@@ -1,9 +1,10 @@
 type TODO = {
-    id?: number,
+    _id?: number,
     task: string,
     description: string,
     priority: string,
-    user_id: number
+    user_id: number,
+    complete?: boolean
 }
 
 export type GET_TODO_REQUSET = void

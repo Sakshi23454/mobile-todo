@@ -4,7 +4,7 @@ import { CREATE_TODO_REQUSET, CREATE_TODO_RESPONSE, DELETE_TODO_REQUSET, DELETE_
 
 export const todoApi = createApi({
     reducerPath: "todoApi",
-    baseQuery: fetchBaseQuery({ baseUrl: `${env.APP_URL}/api/todo`}),
+    baseQuery: fetchBaseQuery({ baseUrl: `${env.APP_URL}/api/todo` }),
     tagTypes: ["todo"],
     endpoints: (builder) => {
         return {
@@ -30,7 +30,7 @@ export const todoApi = createApi({
             updateTodo: builder.mutation<UPDATE_TODO_RESPONSE, UPDATE_TODO_REQUSET>({
                 query: userData => {
                     return {
-                        url: "/update/" + userData.id,
+                        url: "/update/" + userData._id,
                         method: "PUT",
                         body: userData
                     }
@@ -40,16 +40,16 @@ export const todoApi = createApi({
             deleteTodo: builder.mutation<DELETE_TODO_RESPONSE, DELETE_TODO_REQUSET>({
                 query: userData => {
                     return {
-                        url: "/delete/"  +userData.id,
+                        url: "/delete/" + userData.id,
                         method: "DELETE",
                         body: userData
                     }
                 },
                 invalidatesTags: ["todo"]
             }),
-        
+
         }
     }
 })
 
-export const { useAddTodoMutation, useDeleteTodoMutation, useGetTodosQuery, useUpdateTodoMutation} = todoApi
+export const { useAddTodoMutation, useDeleteTodoMutation, useGetTodosQuery, useUpdateTodoMutation, useLazyGetTodosQuery } = todoApi

@@ -27,12 +27,13 @@ exports.readTask = async (req, res) => {
 exports.updateTask = async (req, res) => {
     try {
         const { tid } = req.params
-        const { task, description, priority, user_id, due } = req.body
+        const { task, description, priority, user_id, complete } = req.body
         const obj = {}
         if (task) obj.task = task
         if (description) obj.description = description
         if (priority) obj.priority = priority
         if (user_id) obj.user_id = user_id
+        if (complete) obj.complete = complete
         await Task.findByIdAndUpdate(tid, obj, { runValidators: true })
         res.status(200).json({ message: "task update success" })
     } catch (error) {
