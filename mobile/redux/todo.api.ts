@@ -40,9 +40,8 @@ export const todoApi = createApi({
             deleteTodo: builder.mutation<DELETE_TODO_RESPONSE, DELETE_TODO_REQUSET>({
                 query: userData => {
                     return {
-                        url: "/delete/" + userData.id,
+                        url: "/delete/" + userData._id,
                         method: "DELETE",
-                        body: userData
                     }
                 },
                 invalidatesTags: ["todo"]

@@ -19,5 +19,5 @@ export type CREATE_TODO_RESPONSE = { message: string }
 export type UPDATE_TODO_REQUSET = TODO
 export type UPDATE_TODO_RESPONSE = { message: string }
 
-export type DELETE_TODO_REQUSET = { id: number }
+export type DELETE_TODO_REQUSET = { _id: number }
 export type DELETE_TODO_RESPONSE = { message: string }

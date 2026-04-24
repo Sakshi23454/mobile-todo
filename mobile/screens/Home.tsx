@@ -1,17 +1,21 @@
 import { FlatList, RefreshControl, StyleSheet, Text, View } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import z from 'zod'
 import { Controller, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Button, Card, IconButton, TextInput } from 'react-native-paper'
-import { CREATE_TODO_REQUSET } from '../types/Todo'
-import { useAddTodoMutation, useGetTodosQuery, useLazyGetTodosQuery } from './../redux/todo.api'
+import { CREATE_TODO_REQUSET, DELETE_TODO_REQUSET, UPDATE_TODO_REQUSET } from '../types/Todo'
+import { useAddTodoMutation, useDeleteTodoMutation, useGetTodosQuery, useLazyGetTodosQuery, useUpdateTodoMutation } from './../redux/todo.api'
 import { env } from '../config/env'
 
 const Home = () => {
+  const [selectedTodo, setselectedTodo] = useState<number | null>(null)
+
   const [addTodo, { isLoading: addLoading }] = useAddTodoMutation()
   // const { data } = useGetTodosQuery()
   const [readTodo, { data, isLoading }] = useLazyGetTodosQuery()
+  const [updateTodo, { isLoading: updateLoading }] = useUpdateTodoMutation()
+  const [deleteTodo, { isLoading: deleteLoading }] = useDeleteTodoMutation()
 
   const schema = z.object({
     task: z.string().min(3),
@@ -28,14 +32,50 @@ const Home = () => {
   const handleFormSubmit = async (todoData: CREATE_TODO_REQUSET) => {
     // console.log(todoData)
     try {
-      await addTodo(todoData).unwrap()
-      console.log("todo add success")
+      if (selectedTodo) {
+        await updateTodo({ ...todoData, _id: selectedTodo }).unwrap()
+        console.log("task update succefully")
+        reset({ description: "", task: "", priority: "" })
+        setselectedTodo(null)
+      } else {
+        await addTodo(todoData).unwrap()
+        console.log("todo add success")
+        reset()
+      }
     } catch (error) {
       console.log(error)
     }
   }
   console.log(errors)
-  console.log(data)
+  // console.log(data)
+
+  const handleMarkComplete = async (todoData: UPDATE_TODO_REQUSET) => {
+    try {
+      await updateTodo(todoData).unwrap()
+      console.log("complete success")
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleDelete = async (deletetododata: DELETE_TODO_REQUSET) => {
+    try {
+      await deleteTodo(deletetododata).unwrap()
+      console.log("todo delete success")
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const handleEdit = (data: any) => {
+    reset({
+      task: data.task,
+      description: data.description,
+      priority: data.priority,
+       user_id: data.user_id,
+    })
+  }
+
 
   useEffect(() => {
     readTodo()
@@ -69,8 +109,12 @@ const Home = () => {
             }
           />)
         }
+        {
+          selectedTodo
+            ? <Button onPress={handleSubmit(handleFormSubmit)} mode='outlined'>Update Task</Button>
+            : <Button onPress={handleSubmit(handleFormSubmit)} mode='contained'>Add Task</Button>
+        }
 
-        <Button onPress={handleSubmit(handleFormSubmit)} mode='contained'>Add Task</Button>
       </Card.Content>
     </Card >
 
@@ -84,9 +128,12 @@ const Home = () => {
             <Text>{item.description}</Text>
           </View>
           <View style={{ flexDirection: "row" }}>
-            <IconButton mode='contained' icon="check" />
-            <IconButton mode='contained' icon="pencil" />
-            <IconButton mode='contained' icon="trash-can" />
+            <IconButton disabled={updateLoading} onPress={() => handleMarkComplete({ ...item, complete: true })} mode='contained' icon="check" />
+            <IconButton disabled={updateLoading} onPress={() => {
+              handleEdit(item)
+              setselectedTodo(item._id as number)
+            }} mode='contained' icon="pencil" />
+            <IconButton disabled={deleteLoading} onPress={() => handleDelete({ _id: item._id as number })} mode='contained' icon="trash-can" />
           </View>
         </Card.Content>
       </Card>}
