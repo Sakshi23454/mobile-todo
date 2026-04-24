@@ -13,6 +13,12 @@ export type GET_TODO_RESPONSE = {
     result: TODO[]
 }
 
+export type GET_COMPLETED_TODO_REQUSET = void
+export type GET_COMPLETED_TODO_RESPONSE = {
+    message: string,
+    result: TODO[]
+}
+
 export type CREATE_TODO_REQUSET = TODO
 export type CREATE_TODO_RESPONSE = { message: string }
 
